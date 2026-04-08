@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-fixed-variant": "#004c69",
+                    "inverse-primary": "#bf0715",
+                    "tertiary": "#7bd0ff",
+                    "on-secondary-container": "#00311f",
+                    "surface-container-high": "#222a3d",
+                    "surface-dim": "#0b1326",
+                    "on-primary-container": "#fff6f5",
+                    "surface-container-low": "#131b2e",
+                    "inverse-surface": "#dae2fd",
+                    "secondary-fixed": "#85f8c4",
+                    "on-tertiary-container": "#f2f9ff",
+                    "primary-container": "#dc2626",
+                    "on-secondary-fixed": "#002114",
+                    "on-surface-variant": "#e6bdb8",
+                    "tertiary-fixed-dim": "#7bd0ff",
+                    "surface-bright": "#31394d",
+                    "inverse-on-surface": "#283044",
+                    "on-primary-fixed": "#410002",
+                    "tertiary-container": "#007aa5",
+                    "surface-tint": "#ffb4ab",
+                    "primary-fixed": "#ffdad6",
+                    "surface-container-lowest": "#060e20",
+                    "outline": "#ac8884",
+                    "on-error": "#690005",
+                    "surface-container": "#171f33",
+                    "background": "#0b1326",
+                    "on-secondary-fixed-variant": "#005137",
+                    "on-background": "#dae2fd",
+                    "primary-fixed-dim": "#ffb4ab",
+                    "on-primary-fixed-variant": "#93000b",
+                    "secondary-container": "#25a475",
+                    "error": "#ffb4ab",
+                    "primary": "#ffb4ab",
+                    "tertiary-fixed": "#c4e7ff",
+                    "on-primary": "#690005",
+                    "surface-container-highest": "#2d3449",
+                    "secondary-fixed-dim": "#68dba9",
+                    "surface-variant": "#2d3449",
+                    "error-container": "#93000a",
+                    "outline-variant": "#5c403c",
+                    "secondary": "#68dba9",
+                    "on-error-container": "#ffdad6",
+                    "on-tertiary-fixed": "#001e2c",
+                    "surface": "#0b1326",
+                    "on-surface": "#dae2fd",
+                    "on-tertiary": "#00354a",
+                    "on-secondary": "#003825"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Space Grotesk"],
+                    "body": ["Inter"],
+                    "label": ["Inter"],
+                    "mono": ["JetBrains Mono"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .scanner-line {
+            background: linear-gradient(to bottom, transparent, #7bd0ff, transparent);
+            height: 100px;
+            width: 100%;
+            position: absolute;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body selection:bg-tertiary/30">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 w-full bg-[#0b1326] border-b border-[#dae2fd]/15 shadow-[0_0_15px_rgba(123,208,255,0.05)]">
+<div class="flex items-center gap-3">
+<span class="text-xl font-bold tracking-tighter text-[#7bd0ff] font-headline uppercase">DeepDetect Sentinel</span>
+</div>
+<div class="hidden md:flex items-center gap-8">
+<span class="font-['Space_Grotesk'] uppercase tracking-widest text-xs text-[#7bd0ff] cursor-pointer">Active Analysis</span>
+<span class="font-['Space_Grotesk'] uppercase tracking-widest text-xs text-slate-400 hover:text-white transition-colors cursor-pointer">Archive</span>
+<span class="font-['Space_Grotesk'] uppercase tracking-widest text-xs text-slate-400 hover:text-white transition-colors cursor-pointer">Network Status</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex gap-2">
+<button class="p-2 text-slate-400 hover:text-white transition-colors active:scale-95 duration-75">
+<span class="material-symbols-outlined">sensors</span>
+</button>
+<button class="p-2 text-slate-400 hover:text-white transition-colors active:scale-95 duration-75 relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-primary-container rounded-full"></span>
+</button>
+</div>
+<div class="w-8 h-8 rounded-lg overflow-hidden border border-[#dae2fd]/20">
+<img alt="Investigator Profile" class="w-full h-full object-cover" data-alt="close-up portrait of a serious digital forensic investigator in a dimly lit high-tech environment with blue computer screen reflections" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAu3-exc6UcqdmnfXSDYHHpfT2Ga9YNidqQwjdqGLAS8iVANESH8Jjh-O6EQ_SnJ5bRFCUjngAe_0hLOATe-qnCHf_RH9IMmIaLOHXXqMh0bIfgs2zkMdStPFdPw0WCICXsk47BOBkW34nUkqM6MyENzNzaSq8iB-ybItBPxbWAe1ajyIMI4P9VF5k7WgFsTLhcJbFqc1WTQ7htilgtofMeypAOmfSPb7FarKf4EqX-S5nD_DahNw7tph3n_MqIlHRIOvAD6K_KX_Pl"/>
+</div>
+</div>
+</nav>
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-16 h-[calc(100vh-4rem)] w-64 bg-[#0b1326] border-r border-[#dae2fd]/10 flex flex-col py-4 z-40 hidden md:flex">
+<div class="px-6 mb-8">
+<div class="flex items-center gap-3 py-2">
+<div class="w-10 h-10 bg-surface-container-highest rounded flex items-center justify-center border border-tertiary/20">
+<span class="material-symbols-outlined text-tertiary">biotech</span>
+</div>
+<div>
+<h3 class="text-lg font-bold text-white leading-none">Forensic Lens</h3>
+<p class="text-[10px] uppercase tracking-widest text-secondary-container mt-1 font-mono">V3.4 Active</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<div class="group px-4">
+<a class="flex items-center gap-3 px-4 py-3 bg-[#0b1326] text-[#7bd0ff] border-r-2 border-[#7bd0ff] font-['Inter'] text-sm font-medium duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">upload_file</span>
+<span>Upload</span>
+</a>
+</div>
+<div class="group px-4">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-[#161f35] hover:text-slate-300 font-['Inter'] text-sm font-medium transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span>Batch Analysis</span>
+</a>
+</div>
+<div class="group px-4">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-[#161f35] hover:text-slate-300 font-['Inter'] text-sm font-medium transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">history</span>
+<span>History</span>
+</a>
+</div>
+<div class="group px-4">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-[#161f35] hover:text-slate-300 font-['Inter'] text-sm font-medium transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span>Settings</span>
+</a>
+</div>
+</nav>
+<div class="mt-auto px-4 border-t border-white/5 pt-4">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-[#161f35] hover:text-slate-300 font-['Inter'] text-sm font-medium transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined">security</span>
+<span>Security Log</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="md:ml-64 pt-16 min-h-screen">
+<div class="p-8 max-w-7xl mx-auto">
+<!-- Page Header -->
+<div class="flex justify-between items-end mb-12">
+<div>
+<h1 class="text-4xl font-headline font-bold tracking-tight text-white mb-2">Analysis Pipeline <span class="text-tertiary">#DE-8921</span></h1>
+<div class="flex items-center gap-4 font-mono text-xs uppercase tracking-widest text-on-surface-variant">
+<span class="flex items-center gap-1"><span class="w-2 h-2 bg-tertiary rounded-full animate-pulse"></span> Processing</span>
+<span>|</span>
+<span>File: evidence_vid_042.mp4</span>
+<span>|</span>
+<span>ID: 0x4F2...E89</span>
+</div>
+</div>
+<div class="flex flex-col items-end gap-2">
+<span class="text-xs font-mono text-on-surface-variant">ELAPSED TIME</span>
+<span class="text-2xl font-mono font-medium text-white">00:14:22</span>
+</div>
+</div>
+<!-- Central Processing View -->
+<div class="relative grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Main Loading Unit (Bento Item 1) -->
+<div class="lg:col-span-8 bg-surface-container-low rounded-lg p-12 flex flex-col items-center justify-center min-h-[500px] relative overflow-hidden border border-outline-variant/10">
+<!-- Subtle Background Grid/Texture -->
+<div class="absolute inset-0 opacity-5 pointer-events-none" style="background-image: radial-gradient(circle, #7bd0ff 1px, transparent 1px); background-size: 30px 30px;"></div>
+<!-- High-Tech Spinner Container -->
+<div class="relative w-64 h-64 mb-12">
+<!-- Outer Glow -->
+<div class="absolute inset-0 bg-tertiary/10 rounded-full blur-3xl"></div>
+<!-- Concentric Gauges -->
+<div class="absolute inset-0 rounded-full border-2 border-surface-container-highest"></div>
+<div class="absolute inset-4 rounded-full border-2 border-surface-container-highest"></div>
+<!-- Animated Ring (Simulated) -->
+<div class="absolute inset-0 rounded-full border-t-2 border-tertiary"></div>
+<!-- Percentage Center -->
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-5xl font-headline font-bold text-white">64<span class="text-2xl text-tertiary">%</span></span>
+<span class="text-[10px] font-mono tracking-widest text-on-surface-variant uppercase mt-2">Neural Scan</span>
+</div>
+</div>
+<!-- Dynamic Status Text -->
+<div class="text-center space-y-2 z-10">
+<h2 class="text-xl font-headline font-medium text-white tracking-wide">Running EfficientNet-B3 Analysis...</h2>
+<p class="text-sm font-mono text-tertiary uppercase tracking-widest">Executing biometric consistency check</p>
+</div>
+<!-- Bottom Progress Bar -->
+<div class="absolute bottom-0 left-0 w-full h-1 bg-surface-container-highest">
+<div class="h-full bg-tertiary w-2/3 shadow-[0_0_10px_#7bd0ff]"></div>
+</div>
+</div>
+<!-- Secondary Data Readouts (Bento Item 2) -->
+<div class="lg:col-span-4 flex flex-col gap-8">
+<!-- Frame Extraction Card -->
+<div class="bg-surface-container-low rounded-lg p-6 border border-outline-variant/10">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-xs font-mono font-bold uppercase tracking-widest text-on-surface-variant">Extracted Artifacts</h3>
+<span class="text-[10px] font-mono text-secondary-container">12/48 COMPLETE</span>
+</div>
+<div class="grid grid-cols-3 gap-2">
+<div class="aspect-square bg-surface-container-highest rounded-sm relative overflow-hidden group">
+<img alt="Frame 001" class="w-full h-full object-cover opacity-50 grayscale" data-alt="Close up of digital circuitry on a motherboard with glowing blue traces and high tech aesthetics" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA6iaenZ4eoMCwbrfL35csuEsTAa7pDKrSsM5szw5JISWoVnX0_qmoAitUuPWOWkNrCI95U8XacBCOyv3FUN-x0FnQ7LssKxKXWasVKvQtoDzh8P9xUJ56HREFNADNuQObBjIpmxxnUXltfAVgZIvq7esCICTv3G95JGcxhg3-10ObN-UIGN081LTIharFVRZ6h13j1gpIil6NTgzOtpfVgyCUIEpR3ZTUCJnQLUpEA-AS4JvOPChLuozenQsG_SwFrgSOzaW2RGRvs"/>
+<div class="absolute inset-0 border border-secondary-container/30"></div>
+</div>
+<div class="aspect-square bg-surface-container-highest rounded-sm relative overflow-hidden group">
+<img alt="Frame 002" class="w-full h-full object-cover opacity-50 grayscale" data-alt="Digital representation of microchips and data processing units with sharp edges and cool lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7Aw7bliEywCYYqFrJeRyudp8nWnUN33zpGbvVJWDOQr5x6K_7debS8qBmjAnLlYm-dKOiVOhvf1f0GWL9vsXdsqOwVGr2rwI8H7U1khA1H2Hs6nhPTl5q1lbZWpWLmqLJOm1FO8IpDn4hrIoHTGMWL-r6ocguRh8NnouuQL4TflmvswowEl8AdhDIVnKztMaO_A9wlHtvUN1x6uZYqdxsnlXqXYjhiydD7tWJXsoMygxO5cbrOQB2jDEG9fInrKI8bH1_S13_9eRD"/>
+<div class="absolute inset-0 border border-secondary-container/30"></div>
+</div>
+<div class="aspect-square bg-surface-container-highest rounded-sm relative overflow-hidden group">
+<img alt="Frame 003" class="w-full h-full object-cover opacity-50 grayscale" data-alt="Macro photography of a high resolution screen showing grid patterns and individual pixels" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC00SqBSq261MOi3ZZTZih_OMiOElehW5ecIOcpWa3efpYpY4XdWGYeQrQlsM2DaF1P2FoKxwFeR7XrKzn4gyQzgTnfr2-dhrgpe_J1o0hqmefDgtpewQ1GO30g8kd6EdvQYBKvKW0VmTw0tluiGv0ECXlqtOuXuXsGdJT12f0IOqwnqn-i-L3_wzNWeyJrXFlDpMFMfjNcmkF2bi5rfsdL53nrFHOW5_t1-Imp2jY33ZIXA6uJEQhmbe2O7fZouzbiIzTb7SpU8WAK"/>
+<div class="absolute inset-0 border border-secondary-container/30"></div>
+</div>
+<!-- Loading slots -->
+<div class="aspect-square bg-surface-container-lowest border border-dashed border-outline-variant/20 rounded-sm flex items-center justify-center">
+<span class="material-symbols-outlined text-outline-variant text-sm">hourglass_empty</span>
+</div>
+<div class="aspect-square bg-surface-container-lowest border border-dashed border-outline-variant/20 rounded-sm flex items-center justify-center">
+<span class="material-symbols-outlined text-outline-variant text-sm">hourglass_empty</span>
+</div>
+<div class="aspect-square bg-surface-container-lowest border border-dashed border-outline-variant/20 rounded-sm flex items-center justify-center">
+<span class="material-symbols-outlined text-outline-variant text-sm">hourglass_empty</span>
+</div>
+</div>
+</div>
+<!-- System Resource Monitor -->
+<div class="bg-surface-container-low rounded-lg p-6 border border-outline-variant/10 flex-1">
+<h3 class="text-xs font-mono font-bold uppercase tracking-widest text-on-surface-variant mb-6">Engine Telemetry</h3>
+<div class="space-y-6">
+<div>
+<div class="flex justify-between text-[10px] font-mono mb-2">
+<span class="text-on-surface-variant">GPU LOAD</span>
+<span class="text-tertiary">92.4%</span>
+</div>
+<div class="h-1 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-tertiary w-[92.4%]"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-[10px] font-mono mb-2">
+<span class="text-on-surface-variant">TENSOR CORES</span>
+<span class="text-secondary-container">ACTIVE</span>
+</div>
+<div class="h-1 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-secondary-container w-[100%]"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-[10px] font-mono mb-2">
+<span class="text-on-surface-variant">VRAM USAGE</span>
+<span class="text-white">14.2 GB / 24 GB</span>
+</div>
+<div class="h-1 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-surface-bright w-[58%]"></div>
+</div>
+</div>
+</div>
+<div class="mt-8 p-3 bg-surface-container-highest/50 rounded-lg border border-outline-variant/10">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary-container text-sm">warning</span>
+<p class="text-[10px] font-mono text-on-surface-variant leading-tight">
+                                    MPEG-4 encoding compression noise detected. Adjusting filter threshold.
+                                </p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Analysis Console -->
+<div class="mt-8 bg-surface-container-lowest rounded-lg p-4 border border-outline-variant/5 font-mono text-[10px]">
+<div class="flex items-center gap-2 mb-3 pb-2 border-b border-outline-variant/10">
+<span class="text-tertiary">[SYSTEM LOGS]</span>
+<span class="text-on-surface-variant">REAL-TIME DATA STREAM</span>
+</div>
+<div class="space-y-1 h-32 overflow-y-auto custom-scrollbar">
+<p class="text-on-surface-variant"><span class="text-secondary-container">[INFO]</span> Initializing DeepDetect Core V3.4.2...</p>
+<p class="text-on-surface-variant"><span class="text-secondary-container">[INFO]</span> Successfully mounted evidence_vid_042.mp4</p>
+<p class="text-on-surface-variant"><span class="text-secondary-container">[INFO]</span> Running FaceMesh detection on Frame 0 - 12</p>
+<p class="text-on-surface-variant"><span class="text-primary-container">[WARN]</span> Artifact detected in spatial frequency domain: Frame 004</p>
+<p class="text-on-surface-variant"><span class="text-secondary-container">[INFO]</span> Executing EfficientNet-B3 weighted feature extraction...</p>
+<p class="text-on-surface-variant"><span class="text-tertiary">[BUSY]</span> Analyzing mouth movement vs phonetic pattern correlation...</p>
+<p class="animate-pulse text-white">&gt;_ System awaiting next frame batch</p>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation (Mobile Only) -->
+<div class="md:hidden fixed bottom-0 left-0 w-full bg-[#0b1326] h-16 flex items-center justify-around z-50 border-t border-[#dae2fd]/15">
+<button class="flex flex-col items-center gap-1 text-[#7bd0ff]">
+<span class="material-symbols-outlined">upload_file</span>
+<span class="text-[10px] uppercase font-headline">Upload</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-500">
+<span class="material-symbols-outlined">analytics</span>
+<span class="text-[10px] uppercase font-headline">Analyze</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-500">
+<span class="material-symbols-outlined">history</span>
+<span class="text-[10px] uppercase font-headline">History</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-500">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[10px] uppercase font-headline">Config</span>
+</button>
+</div>
+</body></html>
