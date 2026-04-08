@@ -5,3 +5,4 @@ timm>=0.9
 opencv-python-headless>=4.8
 Pillow>=10.0
 numpy>=1.24
+gunicorn>=22.0.0

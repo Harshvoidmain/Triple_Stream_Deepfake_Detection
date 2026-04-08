@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  sentinel:
+    build: .
+    container_name: deepdetect-sentinel
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./data:/app/data   # Mount a persistent directory if we add a history DB later
+    environment:
+      - FLASK_ENV=production
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:5000/api/health')\""]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    # Configure the Docker container to map through the Host's NVIDIA GPU
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [ gpu ]

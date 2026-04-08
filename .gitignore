@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Logs
+*.log
+*.out
+
+# Mac
+.DS_Store
+
+# User testing files (optional, we keep the model intentionally so friends can download it!)
+dummy.mp4
+test_upload.py

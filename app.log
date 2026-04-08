@@ -17,3 +17,5 @@ nohup: ignoring input
 127.0.0.1 - - [09/Apr/2026 00:54:05] "GET /static/style.css HTTP/1.1" 200 -
 127.0.0.1 - - [09/Apr/2026 00:54:06] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
 127.0.0.1 - - [09/Apr/2026 00:54:11] "POST /api/analyze HTTP/1.1" 200 -
+/home/jarvisclipthat/.local/share/mise/installs/python/3.14.3/lib/python3.14/multiprocessing/resource_tracker.py:396: UserWarning: resource_tracker: There appear to be 1 leaked semaphore objects to clean up at shutdown: {'/mp-lxwv7rhu'}
+  warnings.warn(
