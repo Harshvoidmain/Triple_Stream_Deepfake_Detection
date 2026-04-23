@@ -11,7 +11,7 @@ import tempfile
 from flask import Flask, request, jsonify, render_template, send_from_directory
 
 app = Flask(__name__, static_folder="static", template_folder="templates")
-app.config["MAX_CONTENT_LENGTH"] = 500 * 1024 * 1024  # 500 MB max upload
+app.config["MAX_CONTENT_LENGTH"] = 5000 * 1024 * 1024  # 5GB max upload (for batching)
 app.config["UPLOAD_FOLDER"] = os.path.join(tempfile.gettempdir(), "deepdetect_uploads")
 
 os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
@@ -131,4 +131,4 @@ if __name__ == "__main__":
     print("║  DeepDetect Sentinel — Forensic Lens v3.4   ║")
     print("║  Starting analysis server...                ║")
     print("╚══════════════════════════════════════════════╝")
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5050, debug=True)
