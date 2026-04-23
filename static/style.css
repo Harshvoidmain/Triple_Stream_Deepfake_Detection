@@ -213,3 +213,208 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--surface);color:va
 .animate-in{animation:fadeIn .6s ease forwards}.delay-1{animation-delay:.1s;opacity:0}.delay-2{animation-delay:.2s;opacity:0}.delay-3{animation-delay:.3s;opacity:0}
 @media(max-width:1024px){.bento-grid{grid-template-columns:1fr}.batch-stats{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:768px){.sidebar{display:none}.main-content{margin-left:0}.mobile-nav{display:flex}.content-area{padding:24px 16px 80px}.header-nav{display:none}.result-verdict{flex-direction:column;align-items:center}.frame-strip{grid-template-columns:repeat(6,1fr)}.samples-grid{grid-template-columns:1fr 1fr}.batch-stats{grid-template-columns:1fr 1fr}.app-footer{padding:16px}.footer-metrics{flex-wrap:wrap;gap:16px}}
+
+/* ── GradCAM heatmap frame strip ──────────────────────────── */
+.frame-thumb .frame-original,
+.frame-thumb .frame-heatmap {
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  transition:opacity .35s ease;
+}
+.frame-thumb .frame-original { opacity:1; }
+.frame-thumb .frame-heatmap  { opacity:0; }
+.frame-thumb:hover .frame-original { opacity:0; }
+.frame-thumb:hover .frame-heatmap  { opacity:1; }
+
+.frame-prob-badge {
+  position:absolute;bottom:22px;left:50%;transform:translateX(-50%);
+  background:rgba(0,0,0,.72);border-radius:3px;padding:1px 5px;
+  font-family:'JetBrains Mono',monospace;font-size:.5rem;
+  white-space:nowrap;z-index:5;pointer-events:none;
+  border:1px solid transparent;
+}
+.frame-prob-badge.prob-high { color:#f87171;border-color:rgba(248,113,113,.35); }
+.frame-prob-badge.prob-med  { color:#fbbf24;border-color:rgba(251,191,36,.35); }
+.frame-prob-badge.prob-low  { color:#68dba9;border-color:rgba(104,219,169,.35); }
+
+.frame-heatmap-label {
+  position:absolute;top:3px;right:4px;
+  font-family:'JetBrains Mono',monospace;font-size:.45rem;
+  background:rgba(123,208,255,.15);color:var(--tertiary);
+  padding:1px 4px;border-radius:2px;z-index:5;pointer-events:none;
+  opacity:0;transition:opacity .2s;
+}
+.frame-thumb:hover .frame-heatmap-label { opacity:1; }
+
+/* ── Most / Least Confident Frames panel ──────────────────── */
+.forensic-highlights {
+  display:grid;grid-template-columns:1fr 1fr;gap:16px;
+}
+.highlight-card {
+  background:var(--surface-container-low);
+  border:1px solid rgba(92,64,60,.14);
+  border-radius:var(--radius-lg);
+  padding:20px;
+  display:flex;flex-direction:column;gap:14px;
+  position:relative;overflow:hidden;
+}
+.highlight-card::before {
+  content:'';position:absolute;inset:0;
+  opacity:.04;pointer-events:none;
+  background-image:radial-gradient(circle,var(--tertiary) 1px,transparent 1px);
+  background-size:28px 28px;
+}
+.highlight-card.most-card { border-color:rgba(220,38,38,.2); }
+.highlight-card.least-card{ border-color:rgba(37,164,117,.2); }
+
+.highlight-label {
+  display:flex;align-items:center;gap:8px;
+  font-family:'Space Grotesk';font-size:.625rem;
+  text-transform:uppercase;letter-spacing:.2em;
+  color:rgba(148,163,184,.55);font-weight:600;
+}
+.highlight-label .material-symbols-outlined { font-size:15px; }
+.highlight-card.most-card  .highlight-label { color:#f87171; }
+.highlight-card.least-card .highlight-label { color:#68dba9; }
+
+.highlight-frame-wrapper {
+  position:relative;border-radius:var(--radius-md);
+  overflow:hidden;aspect-ratio:16/9;background:var(--surface-container);
+  box-shadow:0 4px 24px rgba(0,0,0,.4);
+}
+.highlight-frame-wrapper img {
+  width:100%;height:100%;object-fit:cover;display:block;
+}
+.highlight-prob-overlay {
+  position:absolute;bottom:0;left:0;right:0;
+  background:linear-gradient(to top,rgba(6,14,32,.9) 0%,transparent 100%);
+  padding:14px 12px 8px;
+  font-family:'Space Grotesk';font-size:1.25rem;font-weight:700;
+}
+.highlight-card.most-card  .highlight-prob-overlay { color:var(--primary); }
+.highlight-card.least-card .highlight-prob-overlay { color:var(--secondary); }
+
+.highlight-meta {
+  font-family:'JetBrains Mono';font-size:.6875rem;
+  color:rgba(148,163,184,.5);
+}
+
+/* ── Per-Frame Probability Chart ──────────────────────────── */
+.frame-prob-chart-wrapper {
+  background:var(--surface-container-low);
+  border:1px solid rgba(92,64,60,.12);
+  border-radius:var(--radius-lg);
+  padding:20px 24px 16px;
+}
+.frame-prob-chart {
+  display:flex;align-items:flex-end;gap:6px;
+  height:130px;position:relative;margin-top:16px;
+  padding: 0 0 0 28px;
+}
+/* Y-axis lines */
+.frame-prob-chart::before {
+  content:'';position:absolute;
+  left:28px;right:0;top:0;bottom:0;
+  background:repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent calc(33.3% - 1px),
+    rgba(148,163,184,.06) calc(33.3% - 1px),
+    rgba(148,163,184,.06) 33.3%
+  );
+  pointer-events:none;
+}
+.chart-threshold-line {
+  position:absolute;left:28px;right:0;
+  border-top:1px dashed rgba(123,208,255,.4);
+  pointer-events:none;z-index:2;
+}
+.chart-threshold-line::after {
+  content:'T';position:absolute;left:-20px;top:-8px;
+  font-family:'JetBrains Mono';font-size:.5rem;
+  color:var(--tertiary);opacity:.7;
+}
+.chart-y-labels {
+  position:absolute;left:0;top:0;bottom:20px;
+  display:flex;flex-direction:column;
+  justify-content:space-between;align-items:flex-end;
+  width:24px;
+}
+.chart-y-label {
+  font-family:'JetBrains Mono';font-size:.45rem;
+  color:rgba(148,163,184,.3);line-height:1;
+}
+.chart-bar-col {
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;gap:4px;height:100%;
+  position:relative;
+}
+.chart-bar-track {
+  flex:1;width:100%;background:rgba(148,163,184,.06);
+  border-radius:2px 2px 0 0;
+  display:flex;flex-direction:column;
+  justify-content:flex-end;overflow:hidden;
+  position:relative;cursor:pointer;
+  transition:filter .15s;
+}
+.chart-bar-track:hover { filter:brightness(1.3); }
+.chart-bar-fill {
+  width:100%;border-radius:2px 2px 0 0;
+  transition:height .9s cubic-bezier(.34,1.56,.64,1);
+}
+.chart-bar-fill.prob-high { background:linear-gradient(to top,#dc2626,#f87171); }
+.chart-bar-fill.prob-med  { background:linear-gradient(to top,#b45309,#fbbf24); }
+.chart-bar-fill.prob-low  { background:linear-gradient(to top,#15803d,#68dba9); }
+
+/* Tooltip */
+.chart-bar-track::after {
+  content:attr(data-tip);
+  position:absolute;bottom:calc(100% + 6px);left:50%;
+  transform:translateX(-50%);
+  background:var(--surface-container-highest);
+  color:var(--on-surface);
+  font-family:'JetBrains Mono';font-size:.55rem;
+  padding:3px 7px;border-radius:3px;
+  white-space:nowrap;pointer-events:none;
+  opacity:0;transition:opacity .15s;z-index:10;
+}
+.chart-bar-track:hover::after { opacity:1; }
+
+.chart-bar-label {
+  font-family:'JetBrains Mono';font-size:.5rem;
+  color:rgba(148,163,184,.4);text-align:center;
+  flex-shrink:0;
+}
+
+/* Lightbox enhancement */
+.lightbox-tabs {
+  display:flex;gap:8px;margin-bottom:12px;justify-content:center;
+}
+.lightbox-tab {
+  padding:5px 14px;border-radius:var(--radius-sm);
+  font-family:'Space Grotesk';font-size:.625rem;
+  font-weight:600;text-transform:uppercase;letter-spacing:.1em;
+  cursor:pointer;border:1px solid rgba(92,64,60,.2);
+  background:transparent;color:rgba(148,163,184,.5);
+  transition:all var(--tr-fast);
+}
+.lightbox-tab.active {
+  background:var(--tertiary);color:var(--on-tertiary);
+  border-color:var(--tertiary);
+}
+.lightbox-prob-bar {
+  margin-top:10px;display:flex;align-items:center;gap:10px;
+  font-family:'JetBrains Mono';font-size:.6875rem;color:rgba(148,163,184,.6);
+}
+.lightbox-prob-fill-track {
+  flex:1;height:4px;background:var(--surface-container-highest);
+  border-radius:2px;overflow:hidden;
+}
+.lightbox-prob-fill {
+  height:100%;border-radius:2px;transition:width .6s ease;
+}
+
+@media(max-width:768px){
+  .forensic-highlights{grid-template-columns:1fr;}
+  .frame-prob-chart{height:90px;}
+}
+

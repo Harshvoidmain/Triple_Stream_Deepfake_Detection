@@ -182,9 +182,38 @@
 </div>
 </div>
 
-<!-- Extracted frames -->
+<!-- Most / Least Confident Frames -->
 <div>
-<div class="samples-header"><span class="samples-title" id="r-frame-label">Extracted Frames</span><span class="samples-count data-mono">Click any frame to inspect · hover to reveal anomaly heatmap</span></div>
+<div class="samples-header"><span class="samples-title">Forensic Frame Highlights</span><span class="samples-count data-mono">Highest · Lowest manipulation signal</span></div>
+<div class="forensic-highlights">
+  <div class="highlight-card most-card">
+    <div class="highlight-label"><span class="material-symbols-outlined">local_fire_department</span>Most Manipulated Frame</div>
+    <div class="highlight-frame-wrapper">
+      <img id="mc-heatmap" src="" alt="Most confident heatmap"/>
+      <div class="highlight-prob-overlay" id="mc-prob">—</div>
+    </div>
+    <div class="highlight-meta" id="mc-meta">—</div>
+  </div>
+  <div class="highlight-card least-card">
+    <div class="highlight-label"><span class="material-symbols-outlined">shield</span>Least Manipulated Frame</div>
+    <div class="highlight-frame-wrapper">
+      <img id="lc-heatmap" src="" alt="Least confident heatmap"/>
+      <div class="highlight-prob-overlay" id="lc-prob">—</div>
+    </div>
+    <div class="highlight-meta" id="lc-meta">—</div>
+  </div>
+</div>
+</div>
+
+<!-- Per-Frame Probability Chart -->
+<div class="frame-prob-chart-wrapper">
+<div class="samples-header" style="margin-bottom:0"><span class="samples-title">Frame-by-Frame Fake Probability</span><span class="samples-count data-mono">Spatial stream · individual frame analysis · click bar to inspect</span></div>
+<div class="frame-prob-chart" id="frame-prob-chart"></div>
+</div>
+
+<!-- GradCAM Heatmap Frame Strip -->
+<div>
+<div class="samples-header"><span class="samples-title" id="r-frame-label">GradCAM Heatmap Analysis</span><span class="samples-count data-mono">Hover to reveal heatmap · click to inspect</span></div>
 <div class="frame-strip" id="frame-strip"></div>
 </div>
 
@@ -199,8 +228,16 @@
 <div class="frame-lightbox" id="frame-lightbox">
 <div class="frame-lightbox-inner">
 <button class="frame-lightbox-close" id="lightbox-close"><span class="material-symbols-outlined">close</span></button>
+<div class="lightbox-tabs">
+  <button class="lightbox-tab active" id="lb-tab-heatmap">GradCAM Heatmap</button>
+  <button class="lightbox-tab" id="lb-tab-original">Original Frame</button>
+</div>
 <img id="lightbox-img" src="" alt="Frame"/>
 <div class="frame-lightbox-label" id="lightbox-label"></div>
+<div class="lightbox-prob-bar">
+  <span id="lb-prob-text">—</span>
+  <div class="lightbox-prob-fill-track"><div class="lightbox-prob-fill" id="lb-prob-fill" style="width:0"></div></div>
+</div>
 </div>
 </div>
 
@@ -354,57 +391,214 @@ return true;
 }
 }
 
+// ── Lightbox state ────────────────────────────────────────────────
+let _lbHeatmap='', _lbOriginal='', _lbProb=0;
+
+function openLightbox(heatmap, original, frameIdx, totalFrames, prob, threshold){
+  _lbHeatmap=heatmap; _lbOriginal=original; _lbProb=prob;
+  $('lightbox-img').src=heatmap;
+  $('lb-tab-heatmap').classList.add('active');
+  $('lb-tab-original').classList.remove('active');
+  const probPct=(prob*100).toFixed(1);
+  const probColor=prob>0.5?'#f87171':prob>threshold?'#fbbf24':'#68dba9';
+  $('lightbox-label').textContent=`Frame ${frameIdx} of ${totalFrames}  ·  p(fake) = ${probPct}%  ·  Threshold: ${threshold}`;
+  $('lb-prob-text').textContent=`p(fake) ${probPct}%`;
+  $('lb-prob-text').style.color=probColor;
+  const fill=$('lb-prob-fill');
+  fill.style.background=probColor;
+  setTimeout(()=>{ fill.style.width=(prob*100)+'%'; },100);
+  $('frame-lightbox').classList.add('open');
+}
+$('lb-tab-heatmap').addEventListener('click',()=>{
+  $('lightbox-img').src=_lbHeatmap;
+  $('lb-tab-heatmap').classList.add('active');
+  $('lb-tab-original').classList.remove('active');
+});
+$('lb-tab-original').addEventListener('click',()=>{
+  $('lightbox-img').src=_lbOriginal;
+  $('lb-tab-original').classList.add('active');
+  $('lb-tab-heatmap').classList.remove('active');
+});
+
+// ── Main results renderer ─────────────────────────────────────────
 function showResults(r){
-showView('results');const fake=r.prediction==='fake',cls=fake?'fake':'real',conf=r.confidence;
-$('r-score').textContent=conf.toFixed(1)+'%';$('r-score').className='verdict-score '+cls;
-const g=$('gauge-fill');g.setAttribute('class','gauge-fill '+cls);setTimeout(()=>{g.style.strokeDashoffset=440-(440*conf/100)},100);
-const b=$('r-badge');b.className='verdict-status-badge '+cls;
+showView('results');
+const fake=r.prediction==='fake', cls=fake?'fake':'real', conf=r.confidence;
+
+// Gauge + score
+$('r-score').textContent=conf.toFixed(1)+'%';
+$('r-score').className='verdict-score '+cls;
+const g=$('gauge-fill');
+g.setAttribute('class','gauge-fill '+cls);
+setTimeout(()=>{ g.style.strokeDashoffset=440-(440*conf/100); },100);
+
+// Badge
+const b=$('r-badge');
+b.className='verdict-status-badge '+cls;
 b.innerHTML=`<span class="material-symbols-outlined">${fake?'gpp_bad':'verified_user'}</span><span>${fake?'Deepfake Anomaly Detected':'Authenticity Verified'}</span>`;
+
+// Data cells
 $('r-file').textContent=r.filename;
 $('r-prob').textContent=r.prob_fake.toFixed(6);
 $('r-thresh').textContent=r.threshold;
 $('r-time').textContent=r.processing_time+'s';
 $('r-fcount').textContent=r.num_frames;
 $('r-device').textContent=r.device||'cpu';
+
 // Risk badge
-if(r.risk_level){const rb=$('r-risk');rb.textContent='';rb.className='risk-badge '+r.risk_level;
-rb.innerHTML=`<span class="material-symbols-outlined" style="font-size:13px">shield</span>${r.risk_level} RISK`;}
-// Video metadata chips
-if(r.video_resolution){$('r-res').textContent=r.video_resolution;$('r-fps').textContent=r.video_fps+' FPS';$('r-dur').textContent=r.video_duration+'s';$('r-totalframes').textContent=r.video_total_frames+' total frames';}
+if(r.risk_level){
+  const rb=$('r-risk');
+  rb.className='risk-badge '+r.risk_level;
+  rb.innerHTML=`<span class="material-symbols-outlined" style="font-size:13px">shield</span>${r.risk_level} RISK`;
+}
+
+// Video metadata
+if(r.video_resolution){
+  $('r-res').textContent=r.video_resolution;
+  $('r-fps').textContent=r.video_fps+' FPS';
+  $('r-dur').textContent=r.video_duration+'s';
+  $('r-totalframes').textContent=r.video_total_frames+' total frames';
+}
+
 // Threshold bar
-const tf=$('t-fill');tf.className='threshold-fill '+cls;setTimeout(()=>{tf.style.width=(r.prob_fake*100)+'%'},200);$('t-marker').style.left=(r.threshold*100)+'%';
+const tf=$('t-fill');
+tf.className='threshold-fill '+cls;
+setTimeout(()=>{ tf.style.width=(r.prob_fake*100)+'%'; },200);
+$('t-marker').style.left=(r.threshold*100)+'%';
+
 // Stream scores
 if(r.stream_scores){
   ['spatial','temporal','frequency'].forEach(s=>{
-    const v=r.stream_scores[s];const bar=$('sb-'+s);const barCls=v>60?'high':v>35?'med':'low';
+    const v=r.stream_scores[s];
+    const barCls=v>60?'high':v>35?'med':'low';
     $('ss-'+s).textContent=v.toFixed(1)+'%';
+    const bar=$('sb-'+s);
     bar.className='stream-score-bar '+barCls;
-    setTimeout(()=>{bar.style.width=v+'%'},300);
+    setTimeout(()=>{ bar.style.width=v+'%'; },300);
   });
 }
-// Frame strip — real thumbnails from backend
-const fs=$('frame-strip');fs.innerHTML='';
-const thumbs=r.thumbnails||[];
-$('r-frame-label').textContent=`Extracted Frames (${thumbs.length})`;
-const threshold=r.threshold||0.25;const prob=r.prob_fake||0;
-thumbs.forEach((src,i)=>{
-  const d=document.createElement('div');d.className='frame-thumb';
-  if(src){
-    const img=document.createElement('img');img.src=src;img.alt='Frame '+(i+1);d.appendChild(img);
-  } else {
-    d.innerHTML=`<div style="width:100%;height:100%;background:var(--surface-container-high);display:flex;align-items:center;justify-content:center"><span class="material-symbols-outlined" style="font-size:14px;color:rgba(148,163,184,.2)">image</span></div>`;
-  }
-  if(fake){const ov=document.createElement('div');ov.className='frame-thumb-overlay anomaly';d.appendChild(ov);}
-  if(fake){const dot=document.createElement('div');dot.className='frame-anomaly-dot';d.appendChild(dot);}
-  const idx=document.createElement('span');idx.className='frame-index';idx.textContent=String(i+1).padStart(2,'0');d.appendChild(idx);
-  // Lightbox on click
-  if(src){
-    d.addEventListener('click',()=>{
-      $('lightbox-img').src=src;
-      $('lightbox-label').textContent=`Frame ${i+1} of ${thumbs.length} · Fake prob: ${(prob*100).toFixed(1)}% · Threshold: ${threshold}`;
-      $('frame-lightbox').classList.add('open');
+
+// ── Most / Least Confident Frames ──────────────────────────
+const threshold=r.threshold||0.25;
+if(r.most_confident_frame){
+  const mc=r.most_confident_frame;
+  $('mc-heatmap').src=mc.heatmap||mc.thumbnail;
+  $('mc-prob').textContent=`Frame #${mc.frame_number}  ·  ${(mc.prob*100).toFixed(1)}%`;
+  $('mc-meta').textContent=`Highest fake probability · p(fake) = ${mc.prob.toFixed(4)}`;
+  $('mc-heatmap').style.cursor=mc.heatmap?'pointer':'default';
+  if(mc.heatmap) $('mc-heatmap').parentElement.onclick=()=>
+    openLightbox(mc.heatmap, mc.thumbnail||mc.heatmap, mc.frame_number, r.num_frames, mc.prob, threshold);
+}
+if(r.least_confident_frame){
+  const lc=r.least_confident_frame;
+  $('lc-heatmap').src=lc.heatmap||lc.thumbnail;
+  $('lc-prob').textContent=`Frame #${lc.frame_number}  ·  ${(lc.prob*100).toFixed(1)}%`;
+  $('lc-meta').textContent=`Lowest fake probability · p(fake) = ${lc.prob.toFixed(4)}`;
+  $('lc-heatmap').style.cursor=lc.heatmap?'pointer':'default';
+  if(lc.heatmap) $('lc-heatmap').parentElement.onclick=()=>
+    openLightbox(lc.heatmap, lc.thumbnail||lc.heatmap, lc.frame_number, r.num_frames, lc.prob, threshold);
+}
+
+// ── Per-Frame Probability Chart ────────────────────────────
+const frameProbs=r.frame_probs||[];
+const chart=$('frame-prob-chart');
+chart.innerHTML='';
+if(frameProbs.length){
+  // Y-axis labels
+  const yLbls=document.createElement('div');
+  yLbls.className='chart-y-labels';
+  ['1.0','0.5','0.0'].forEach(v=>{ const s=document.createElement('span');s.className='chart-y-label';s.textContent=v;yLbls.appendChild(s); });
+  chart.appendChild(yLbls);
+
+  // Threshold line
+  const thLine=document.createElement('div');
+  thLine.className='chart-threshold-line';
+  thLine.style.bottom=(threshold*100)+'%';
+  chart.appendChild(thLine);
+
+  // Bars
+  frameProbs.forEach((prob,i)=>{
+    const barCls=prob>0.5?'prob-high':prob>threshold?'prob-med':'prob-low';
+    const col=document.createElement('div');
+    col.className='chart-bar-col';
+    const track=document.createElement('div');
+    track.className='chart-bar-track';
+    track.dataset.tip=`Frame ${i+1}: ${(prob*100).toFixed(1)}%`;
+    const fill=document.createElement('div');
+    fill.className='chart-bar-fill '+barCls;
+    fill.style.height='0';
+    track.appendChild(fill);
+    const lbl=document.createElement('div');
+    lbl.className='chart-bar-label';
+    lbl.textContent='F'+(i+1);
+    col.appendChild(track);
+    col.appendChild(lbl);
+    chart.appendChild(col);
+    // Animate in
+    const heatmaps=r.heatmap_frames||[];
+    const thumbs=r.thumbnails||[];
+    track.addEventListener('click',()=>{
+      if(heatmaps[i]) openLightbox(heatmaps[i], thumbs[i]||heatmaps[i], i+1, frameProbs.length, prob, threshold);
     });
+    setTimeout(()=>{ fill.style.height=(prob*100)+'%'; }, 400+i*80);
+  });
+}
+
+// ── GradCAM Frame Strip ───────────────────────────────────
+const fs=$('frame-strip');
+fs.innerHTML='';
+const heatmaps=r.heatmap_frames||[];
+const thumbs=r.thumbnails||[];
+$('r-frame-label').textContent=`GradCAM Heatmap Analysis (${heatmaps.length} frames)`;
+
+heatmaps.forEach((hmap,i)=>{
+  const fprob=(r.frame_probs||[])[i]||0;
+  const orig=thumbs[i]||'';
+  const probCls=fprob>0.5?'prob-high':fprob>threshold?'prob-med':'prob-low';
+
+  const d=document.createElement('div');
+  d.className='frame-thumb';
+
+  // Original image (shown by default, fades on hover)
+  if(orig){
+    const imgO=document.createElement('img');
+    imgO.className='frame-original';
+    imgO.src=orig;
+    imgO.alt='Frame '+(i+1);
+    d.appendChild(imgO);
   }
+
+  // Heatmap image (fades IN on hover)
+  if(hmap){
+    const imgH=document.createElement('img');
+    imgH.className='frame-heatmap';
+    imgH.src=hmap;
+    imgH.alt='Heatmap '+(i+1);
+    d.appendChild(imgH);
+
+    const hmLbl=document.createElement('span');
+    hmLbl.className='frame-heatmap-label';
+    hmLbl.textContent='GRADCAM';
+    d.appendChild(hmLbl);
+  }
+
+  // Per-frame probability badge
+  const badge=document.createElement('span');
+  badge.className='frame-prob-badge '+probCls;
+  badge.textContent=(fprob*100).toFixed(1)+'%';
+  d.appendChild(badge);
+
+  // Frame number index
+  const idx=document.createElement('span');
+  idx.className='frame-index';
+  idx.textContent=String(i+1).padStart(2,'0');
+  d.appendChild(idx);
+
+  // Click → lightbox
+  d.addEventListener('click',()=>{
+    openLightbox(hmap||orig, orig||hmap, i+1, heatmaps.length, fprob, threshold);
+  });
+
   fs.appendChild(d);
 });
 }
