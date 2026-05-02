@@ -127,8 +127,8 @@ def health():
 # ─── Entry Point ────────────────────────────────────────────
 
 if __name__ == "__main__":
-    print("╔══════════════════════════════════════════════╗")
-    print("║  DeepDetect Sentinel — Forensic Lens v3.4   ║")
-    print("║  Starting analysis server...                ║")
-    print("╚══════════════════════════════════════════════╝")
+    print("================================================")
+    print("|  DeepDetect Sentinel - Forensic Lens v3.4    |")
+    print("|  Starting analysis server...                 |")
+    print("================================================")
     app.run(host="0.0.0.0", port=5050, debug=True)

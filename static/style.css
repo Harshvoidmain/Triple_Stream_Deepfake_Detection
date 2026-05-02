@@ -78,8 +78,8 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--surface);color:va
 .queue-panel{padding:24px;display:flex;flex-direction:column;justify-content:space-between;gap:20px}
 .queue-header{display:flex;align-items:center;justify-content:space-between;padding-bottom:12px;border-bottom:1px solid rgba(92,64,60,.08)}
 .queue-title{font-family:'Space Grotesk';font-size:.625rem;font-weight:700;color:var(--tertiary);text-transform:uppercase;letter-spacing:.15em}
-.queue-row{display:flex;justify-content:space-between;align-items:center;font-size:.75rem}
-.queue-label{color:rgba(148,163,184,.5)}.queue-value{color:rgba(148,163,184,.7)}.queue-value.ready{color:var(--secondary)}
+.queue-row{display:flex;justify-content:space-between;align-items:flex-start;font-size:.75rem;gap:16px}
+.queue-label{color:rgba(148,163,184,.5);flex:0 0 140px}.queue-value{color:rgba(148,163,184,.7);flex:1;text-align:right}.queue-value.ready{color:var(--secondary)}
 
 .btn-primary{width:100%;padding:16px 24px;background:var(--primary-container);color:var(--on-primary-container);border:none;border-radius:var(--radius-md);font-family:'Space Grotesk';font-weight:700;font-size:.875rem;text-transform:uppercase;letter-spacing:.15em;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:12px;transition:all var(--tr-base)}
 .btn-primary:hover{filter:brightness(1.15);box-shadow:0 0 30px rgba(220,38,38,.3)}.btn-primary:active{transform:scale(.98)}

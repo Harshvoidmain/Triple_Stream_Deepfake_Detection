@@ -20,7 +20,7 @@
   <header class="app-header">
     <div class="header-brand">
       <span class="brand-name">DeepDetect Sentinel</span>
-      <nav class="header-nav"><a href="#" class="active">Forensic Analysis</a><a href="#">Documentation</a></nav>
+      <nav class="header-nav"><a href="#view-upload" data-view="upload" class="active">Forensic Analysis</a><a href="#view-documentation" data-view="documentation">Documentation</a></nav>
     </div>
     <div class="header-actions">
       <button class="header-icon-btn"><span class="material-symbols-outlined">sensors</span></button>
@@ -454,6 +454,78 @@
           </div>
         </div>
       </div>
+
+      <!-- VIEW: DOCUMENTATION -->
+      <div class="view" id="view-documentation">
+        <div class="content-area">
+          <section class="animate-in delay-1">
+            <div class="section-tag">
+              <div class="section-tag-line"></div><span class="section-tag-text">Project Documentation</span>
+            </div>
+            <h1 class="section-title">Detection of Face-Swap <span class="light">Deep Fake Videos</span></h1>
+            <p class="section-desc">A condensed documentation view based on the uploaded project report. It covers the
+              problem statement, system design, requirements, and implementation summary used in the report.</p>
+          </section>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-bottom:24px">
+            <div class="glass-panel" style="padding:24px">
+              <div class="queue-header" style="margin-bottom:16px"><span class="queue-title">Project Snapshot</span></div>
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <div class="queue-row"><span class="queue-label">Title</span><span class="queue-value">Detection of Face-Swap Deep Fake Videos</span></div>
+                <div class="queue-row"><span class="queue-label">Degree</span><span class="queue-value">B.Tech Computer Engineering</span></div>
+                <div class="queue-row"><span class="queue-label">Academic Year</span><span class="queue-value data-mono">2025-26</span></div>
+                <div class="queue-row"><span class="queue-label">Source</span><span class="queue-value data-mono">Report_Deepfake (5) (1).pdf</span></div>
+              </div>
+            </div>
+            <div class="glass-panel" style="padding:24px">
+              <div class="queue-header" style="margin-bottom:16px"><span class="queue-title">Core Aim</span></div>
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <div class="queue-row"><span class="queue-label">Goal</span><span class="queue-value">Detect and localize face-swap deepfakes in video content.</span></div>
+                <div class="queue-row"><span class="queue-label">Accuracy Target</span><span class="queue-value">Greater than 90% on benchmark data.</span></div>
+                <div class="queue-row"><span class="queue-label">Robustness Target</span><span class="queue-value">Greater than 85% on compressed videos.</span></div>
+                <div class="queue-row"><span class="queue-label">Explainability</span><span class="queue-value">Grad-CAM heatmaps and exportable forensic reports.</span></div>
+              </div>
+            </div>
+            <div class="glass-panel" style="padding:24px">
+              <div class="queue-header" style="margin-bottom:16px"><span class="queue-title">System Stack</span></div>
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <div class="queue-row"><span class="queue-label">Frontend</span><span class="queue-value">HTML, CSS, JavaScript</span></div>
+                <div class="queue-row"><span class="queue-label">Backend</span><span class="queue-value">Flask, Gunicorn</span></div>
+                <div class="queue-row"><span class="queue-label">ML</span><span class="queue-value">PyTorch, timm, OpenCV, MediaPipe</span></div>
+                <div class="queue-row"><span class="queue-label">Packaging</span><span class="queue-value">Docker and Docker Compose</span></div>
+              </div>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;margin-bottom:24px">
+            <div class="glass-panel" style="padding:24px">
+              <div class="queue-header" style="margin-bottom:16px"><span class="queue-title">Architecture</span></div>
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <div class="queue-row"><span class="queue-label">Spatial Stream</span><span class="queue-value">DeiT-Small backbone for frame-level artifacts.</span></div>
+                <div class="queue-row"><span class="queue-label">Temporal Stream</span><span class="queue-value">Transformer encoder for motion inconsistencies.</span></div>
+                <div class="queue-row"><span class="queue-label">Frequency Stream</span><span class="queue-value">High-pass CNN for compression-resistant cues.</span></div>
+                <div class="queue-row"><span class="queue-label">Fusion</span><span class="queue-value">Triple-Stream detector with attention pooling.</span></div>
+              </div>
+            </div>
+            <div class="glass-panel" style="padding:24px">
+              <div class="queue-header" style="margin-bottom:16px"><span class="queue-title">Key Requirements</span></div>
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <div class="queue-row"><span class="queue-label">Input</span><span class="queue-value">MP4, AVI, MOV and related video formats.</span></div>
+                <div class="queue-row"><span class="queue-label">Features</span><span class="queue-value">Single upload, batch analysis, history, settings.</span></div>
+                <div class="queue-row"><span class="queue-label">Outputs</span><span class="queue-value">Confidence, fake probability, heatmaps, frame breakdown.</span></div>
+                <div class="queue-row"><span class="queue-label">Storage</span><span class="queue-value">Temporary secure storage with cleanup after analysis.</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="glass-panel" style="padding:24px">
+            <div class="queue-header" style="margin-bottom:16px"><span class="queue-title">Documentation Summary</span></div>
+            <div style="display:grid;gap:12px">
+              <div class="queue-row"><span class="queue-label">Problem</span><span class="queue-value">Deepfake videos threaten digital authenticity, forensic trust, and media integrity.</span></div>
+              <div class="queue-row"><span class="queue-label">Approach</span><span class="queue-value">Combine spatial, temporal, and frequency cues to improve robustness across compressed and unseen data.</span></div>
+              <div class="queue-row"><span class="queue-label">Deployment</span><span class="queue-value">Web-based interface with REST API, batch processing, and downloadable analysis results.</span></div>
+              <div class="queue-row"><span class="queue-label">Future Scope</span><span class="queue-value">Better compression handling, cross-dataset generalization, and production-scale optimization.</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
     </main>
   </div>
 
@@ -481,7 +553,8 @@
       function showView(v) {
         document.querySelectorAll('.view').forEach(x => x.classList.remove('active')); $('view-' + v)?.classList.add('active');
         document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active')); document.querySelector(`.sidebar-link[data-view="${v}"]`)?.classList.add('active');
-        document.querySelectorAll('.mobile-nav-btn').forEach(b => b.classList.remove('active')); document.querySelector(`.mobile-nav-btn[data-view="${v}"]`)?.classList.add('active')
+        document.querySelectorAll('.mobile-nav-btn').forEach(b => b.classList.remove('active')); document.querySelector(`.mobile-nav-btn[data-view="${v}"]`)?.classList.add('active');
+        document.querySelectorAll('.header-nav a').forEach(a => a.classList.remove('active')); document.querySelector(`.header-nav a[data-view="${v}"]`)?.classList.add('active')
       }
       document.querySelectorAll('[data-view]').forEach(b => b.addEventListener('click', () => showView(b.dataset.view)));
 
